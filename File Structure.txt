@@ -1,0 +1,49 @@
+c++ .h
+..\Source\ProjectName\Public
+c++ .cpp
+..\Source\ProjectName\Private
+
+导入的外部资源包(从外部导入的资源包很庞大，不一定都用得到。把用到的部分整合到下面对应的位置)
+..\Content\资源包名称
+
+普通蓝图
+..\Content\ProjectName\
+
+AI相关蓝图(行为树，黑板等) 
+..\Content\ProjectName\AI
+
+引用中的资源包(不可分割的资源包，如角色 A 引用的网格，骨骼，材质，粒子，动画，音效等)【注意随时整理】
+..\Content\ProjectName\Assets\资源名包称
+
+声音文件(除去资源包相关引用的独立声音文件，如BGM)
+..\Content\ProjectName\Audio
+
+数据相关(如资产表格，定义结构体，定义枚举等)
+..\Content\ProjectName\Data
+
+图像(除资源包相关引用的独立图像，如PNG JPG 纹理等)
+..\Content\ProjectName\Images
+
+关卡地图
+..\Content\ProjectName\Maps
+
+材质相关(除去资源包相关引用的独立材质，如默认材质；材质函数；材质包等)
+..\Content\ProjectName\Materials
+
+网格(除资源包相关引用的独立网格，如正方体，圆柱，圆锥)
+..\Content\ProjectName\Mesh
+
+粒子相关(除去资源包相关引用的独立粒子系统，如粒子效果，粒子包等)
+..\Content\ProjectName\Particle
+
+UI相关(控件蓝图)
+..\Content\ProjectName\UI
+
+
+
+GitHub上传内容
+
+..\Content\ProjectName
+..\Source
+..\Config
+ProjectName.uproject
