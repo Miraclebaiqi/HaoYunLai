@@ -9,24 +9,28 @@
 
 void AHItemOnTable::Interact_Implementation(APawn* InstigatorActor)
 {
-	if (InstigatorActor)
+	if (IsActive)
 	{
-		if (!IsFocused)
+		if (InstigatorActor)
 		{
-			AHPlayer* MyPlayer = Cast<AHPlayer>(InstigatorActor);
-			if (MyPlayer)
+			if (!IsFocused)
 			{
-				MyPlayer->FocusOn(this);
-				MyPlayer->SetPlayerState(PS_FocusOnTableItem);
+				AHPlayer* MyPlayer = Cast<AHPlayer>(InstigatorActor);
+				if (MyPlayer)
+				{
+					MyPlayer->FocusOn(this);
+					MyPlayer->SetPlayerState(EPlayerState::PS_FocusOnTableItem);
+				}
+			}
+			else
+			{
+				//在这里要调用函数本身才能被蓝图覆盖。Ps 不能调用FurtherInteraction_Implementation;
+				FurtherInteraction(InstigatorActor);
 			}
 		}
-		else
-		{
-			FurtherInteraction_Implementation(InstigatorActor);
-		}
-	
 	}
 }
+
 void AHItemOnTable::FurtherInteraction_Implementation(APawn* InstigatorActor)
 {
 	UKismetSystemLibrary::PrintString(this,TEXT("桌上物品的进一步交互"),true,false,FLinearColor::Yellow,3.0f);

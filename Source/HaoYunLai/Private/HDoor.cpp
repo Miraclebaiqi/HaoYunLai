@@ -11,21 +11,21 @@ AHDoor::AHDoor()
 {
 	IsClose = false;
 	IsBroken = false;
+	MatchingCode = -1;
 }
 
 bool AHDoor::SwitchDoor()
 {
-
-		//如果门没坏，则切换门的开关状态
-		if (!IsBroken)
-		{
-			IsClose = !IsClose;
-			AnimationDoor(IsClose);
-			AssimilateConnectedDoor();
-			return true;
-		}
-		//如果门坏了，则不能切换状态
-		return false;		
+	//如果门没坏，则切换门的开关状态
+	if (!IsBroken)
+	{
+		IsClose = !IsClose;
+		AnimationDoor(IsClose);
+		AssimilateConnectedDoor();
+		return true;
+	}
+	//如果门坏了，则不能切换状态
+	return false;
 }
 
 void AHDoor::BrokeDoor()
@@ -44,6 +44,7 @@ void AHDoor::FixDoor()
 	IsBroken = false;
 }
 
+//连接门的同化操作
 bool AHDoor::AssimilateConnectedDoor()
 {
 	if (ConnectedDoor)
@@ -61,22 +62,44 @@ bool AHDoor::AssimilateConnectedDoor()
 
 
 //门触发了交互
-
 void AHDoor::Interact_Implementation(APawn* InstigatorActor)
 {
-	if (IsClose)
+	if(IsActive)
 	{
-		UE_LOG(LogTemp, Log, TEXT("门是关闭状态的，无法通过"));
+		if (IsClose)
+		{
+			UE_LOG(LogTemp, Log, TEXT("门是关闭状态的，无法通过"));
+		}
+		else
+		{
+			if (ensure(ConnectedDoor))
+			{
+				AHRoomBase* NextRoom = ConnectedDoor->GetOwnerRoom();
+				if (ensure(NextRoom))
+				{
+					AHPlayer* PlayerPawn = Cast<AHPlayer>(InstigatorActor);
+					if (PlayerPawn)
+					{
+						PlayerPawn->SwitchCurrentCamera(Cast<AActor>(NextRoom));
+						OwnerRoom->RoomOutOfFocus();
+						NextRoom->RoomFocusOn();
+						UE_LOG(LogTemp, Log, TEXT("门是打开状态的，进入下一个房间"));
+					}
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("你的门没有连接任何房间"));
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("你的门并没有设置连接门"));
+			}
+		}
 	}
 	else
 	{
-		AHRoomBase* NextRoom = ConnectedDoor->GetOwnerRoom();
-		AHPlayer* PlayerPawn = Cast<AHPlayer>(InstigatorActor);
-		if (PlayerPawn)
-		{
-			PlayerPawn->SwitchCurrentCamera(Cast<AActor>(NextRoom));
-			UE_LOG(LogTemp, Log, TEXT("门是打开状态的，进入下一个房间"));
-		}
+		UE_LOG(LogTemp, Warning, TEXT("你的门并没有激活"));
 	}
 }
 
@@ -84,22 +107,42 @@ bool AHDoor::GetDoorIsClose()
 {
 	return IsClose;
 }
+
+int32 AHDoor::GetMatchingCode()
+{
+	return MatchingCode;
+}
+
 AHDoor* AHDoor::GetConectedDoor()
 {
 	return ConnectedDoor;
 }
+
 AHRoomBase* AHDoor::GetOwnerRoom()
 {
 	return OwnerRoom;
 }
+
 void AHDoor::SetDoorIsBroken(bool BeBroken)
 {
 	IsBroken = BeBroken;
 }
+
 void AHDoor::SetDoorIsClose(bool BeClosed)
 {
 	IsClose = BeClosed;
 }
+
+void AHDoor::SetMatchingCode(int32 Code)
+{
+	MatchingCode = Code;
+}
+
+void AHDoor::SetConectedDoor(AHDoor* Door)
+{
+	ConnectedDoor = Door;
+}
+
 void AHDoor::SetOwnerRoom(AHRoomBase* Room)
 {
 	OwnerRoom = Room;

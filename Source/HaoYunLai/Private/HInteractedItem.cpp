@@ -25,6 +25,7 @@ AHInteractedItem::AHInteractedItem()
 	CameraComp->SetupAttachment(RootComponent);
 	
 	IsFocused = false;
+	IsActive = true;
 }
 void AHInteractedItem::Interact_Implementation(APawn* InstigatorActor)
 {

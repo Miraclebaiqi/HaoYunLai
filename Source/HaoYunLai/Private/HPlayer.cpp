@@ -19,47 +19,58 @@ AHPlayer::AHPlayer()
 
 	ActiveCamera = this;
 	RayDistance = 10000.0f;
-	PS = PS_Normal;
+	PS = EPlayerState::PS_Normal;
 }
 
 // 聚焦可交互物品的方法
-void AHPlayer::FocusOn(AHInteractedItem* Item)
+void AHPlayer::FocusOn(AHInteractedItem* Item,float Time)
 {
 	if (ensure(Item))
 	{
 		if (!Item->IsFocused)
 		{
+			//如果聚焦到下一件物品则失焦当前物品
 			if (FocusedItem != nullptr)
 			{
-				FocusedItem->IsFocused = false;
+				FocusOut(FocusedItem);
 			}
 			FocusedItem = Item;
-			SwitchCurrentCamera(Item);
+			SwitchCurrentCamera(FocusedItem,Time);
 			FocusedItem->IsFocused = true;
+			FocusedItem->EnableInput(UGameplayStatics::GetPlayerController(this,0));
 		}
 	}
 }
 
+void AHPlayer::FocusOut(AHInteractedItem* Item)
+{
+	if(ensure(Item))
+	{
+		Item->IsFocused = false;
+		Item->DisableInput(UGameplayStatics::GetPlayerController(this,0));
+	}
+}
+
 //切换摄像机 多用于房间
-void AHPlayer::SwitchCurrentCamera(AActor* CurrentCamera)
+void AHPlayer::SwitchCurrentCamera(AActor* CurrentCamera,float Time)
 {
 	if (ensure(CurrentCamera))
 	{
 		ActiveCamera = CurrentCamera;
-		ActiveCurrentCamera(ActiveCamera);
+		ActiveCurrentCamera(ActiveCamera,Time);
 	}
 }
 
 
 //切换摄像机视角功能实现
-void AHPlayer::ActiveCurrentCamera(AActor* CurrentCamera)
+void AHPlayer::ActiveCurrentCamera(AActor* CurrentCamera,float BlendTime)
 {
 	if (ensure(CurrentCamera))
 	{
 		APlayerController* APC = UGameplayStatics::GetPlayerController(this, 0);
 		if (ensure(APC))
 		{
-			APC->SetViewTargetWithBlend(CurrentCamera, 2.0f);
+			APC->SetViewTargetWithBlend(CurrentCamera, BlendTime);
 		}
 	}
 }
@@ -94,7 +105,7 @@ void AHPlayer::PrimaryInteract()
 					if (HitACtor->Implements<UHGameInterface>())
 					{
 						IHGameInterface::Execute_Interact(HitACtor, this);
-						DrawDebugSphere(GetWorld(), OutHit.Location, 10.0f, 12, FColor::Green, false, 5);
+						DrawDebugSphere(GetWorld(), OutHit.Location, 5.0f, 8, FColor::Green, false, 5);
 						// if (HitACtor->GetComponentByClass(UCameraComponent::StaticClass()))
 						// {
 						// 	FocusOn(Cast<AHInteractedItem>(HitACtor));
@@ -129,6 +140,7 @@ void AHPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction("ClickLeft", IE_Pressed, this, &AHPlayer::ClickLeft);
 	PlayerInputComponent->BindAction("ClickRight", IE_Pressed, this, &AHPlayer::ClickRight);
+	
 }
 
 void AHPlayer::ClickLeft()
@@ -138,9 +150,20 @@ void AHPlayer::ClickLeft()
 
 void AHPlayer::ClickRight()
 {
-	if (PS == PS_FocusOnTableItem)
+	if (PS == EPlayerState::PS_FocusOnTableItem)
 	{
-		FocusOn(Cast<AHInteractedItem>(Table));
-		PS = PS_FocusOnTable;
+		if (ensure(Table))
+		{
+			FocusOn(Cast<AHInteractedItem>(Table));
+			PS = EPlayerState::PS_FocusOnTable;
+		}
+	}
+	else if (PS == EPlayerState::PS_FocusInRoom)
+	{
+		if (ensure(Monitor))
+		{
+			FocusOn(Cast<AHInteractedItem>(Monitor),0.0f);
+			PS = EPlayerState::PS_FocusOnTableItem;
+		}
 	}
 }

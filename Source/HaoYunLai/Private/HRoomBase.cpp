@@ -4,8 +4,8 @@
 #include "HRoomBase.h"
 
 #include "HDoor.h"
+#include "HItemInRoom.h"
 #include "HSpreadBase.h"
-#include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
 
@@ -21,22 +21,34 @@ AHRoomBase::AHRoomBase()
 }
 
 
-void AHRoomBase::InitializeDoor()
+void AHRoomBase::InitializeDoors()
 {
-	for (int Index = 0; Index < Doors.Num(); Index++)
+	for (AHDoor* Door : Doors)
 	{
-		if (Doors[Index] == nullptr)
+		if (Door != nullptr)
 		{
-			break;
+			Door->SetOwnerRoom(this);
+			Door->IsActive = false;
 		}
-		Doors[Index]->SetOwnerRoom(this);
+	}
+}
+
+void AHRoomBase::InitializeItems()
+{
+	for (AHItemInRoom* Item : Items)
+	{
+		if (Item != nullptr)
+		{
+			Item->IsActive = false;
+		}
 	}
 }
 
 void AHRoomBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	InitializeDoor();
+	InitializeDoors();
+	InitializeItems();
 }
 
 //给房间添加蔓延物 同种蔓延物不会重复添加
@@ -68,8 +80,44 @@ void AHRoomBase::RemoveSpread(AHSpreadBase* Spread)
 	}
 }
 
-ACameraActor* AHRoomBase::GetCamera()
+//聚焦该房间，房间内物品变得可交互
+void AHRoomBase::RoomFocusOn()
 {
-	return Cast<ACameraActor>(CameraComp);
+	for (AHDoor* Door : Doors)
+	{
+		if (Door != nullptr)
+		{
+			Door->IsActive = true;
+		}
+	}
+	for (AHItemInRoom* Item : Items)
+	{
+		if (Item != nullptr)
+		{
+			Item->IsActive = true;
+		}
+	}
 }
+
+//失焦该房间，房间内物品均不可交互
+void AHRoomBase::RoomOutOfFocus()
+{
+	for (AHDoor* Door : Doors)
+	{
+		if (Door != nullptr)
+		{
+			Door->IsActive = false;
+		}
+	}
+	for (AHItemInRoom* Item : Items)
+	{
+		if (Item != nullptr)
+		{
+			Item->IsActive = false;
+		}
+	}
+}
+
+
+
 

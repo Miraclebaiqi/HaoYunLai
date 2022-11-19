@@ -32,6 +32,9 @@ public:
 	// Sets default values for this actor's properties
 	AHInteractedItem();
 
-	UPROPERTY(VisibleAnywhere, Category="Attribute")
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="Attribute")
 	bool IsFocused;
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="Attribute")
+	bool IsActive;
+	
 };

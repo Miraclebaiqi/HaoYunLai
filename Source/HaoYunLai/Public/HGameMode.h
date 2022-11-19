@@ -13,7 +13,15 @@ UCLASS()
 class HAOYUNLAI_API AHGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+protected:
+
+	UFUNCTION()
+	void MatchDoor();
+
+
+public:
+	virtual void StartPlay() override;
 };
 
 

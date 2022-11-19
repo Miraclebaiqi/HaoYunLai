@@ -7,13 +7,16 @@
 
 void AHTable::Interact_Implementation(APawn* InstigatorActor)
 {
-	if (InstigatorActor)
+	if(IsActive)
 	{
-		AHPlayer* MyPlayer = Cast<AHPlayer>(InstigatorActor);
-		if (MyPlayer)
+		if (InstigatorActor)
 		{
-			MyPlayer->FocusOn(this);
-			MyPlayer->SetPlayerState(PS_FocusOnTable);
+			AHPlayer* MyPlayer = Cast<AHPlayer>(InstigatorActor);
+			if (MyPlayer)
+			{
+				MyPlayer->FocusOn(this);
+				MyPlayer->SetPlayerState(EPlayerState::PS_FocusOnTable);
+			}
 		}
 	}
 }

@@ -8,6 +8,7 @@
 
 class UCameraComponent;
 class AHDoor;
+class AHItemInRoom;
 class AHSpreadBase;
 class ACameraActor;
 class USceneCaptureComponent2D;
@@ -21,25 +22,38 @@ protected:
 	UCameraComponent* CameraComp;
 	UPROPERTY(VisibleAnywhere,Category="Component")
 	USceneCaptureComponent2D* CaptureComp2D;
-	UPROPERTY(EditDefaultsOnly,Category="Attribute")
+
+	//存放房间里的所有门
+	UPROPERTY(EditAnywhere,Category="Attribute")
 	TArray<AHDoor*> Doors;
+	//存放房间里所有可交互的物品
+	UPROPERTY(EditAnywhere,Category="Attribute")
+	TArray<AHItemInRoom*> Items;
+	//存放房间里所有的蔓延物
 	UPROPERTY(VisibleAnywhere,Category="Attribute")
 	TArray<AHSpreadBase*> Spreads;
 
 	UFUNCTION(BlueprintCallable,Category="Initialize")
-	void InitializeDoor();
+	void InitializeDoors();
+	UFUNCTION(BlueprintCallable,Category="Initialize")
+	void InitializeItems();
 
 	virtual void PostInitializeComponents() override;
 	
 public:
 
-	UFUNCTION(BlueprintCallable,Category="Get")
-	ACameraActor* GetCamera();
+	AHRoomBase();
 	
 	UFUNCTION(BlueprintCallable,Category="Operation")
 	void AddSpread(AHSpreadBase* Spread);
 	UFUNCTION(BlueprintCallable,Category="Operation")
 	void RemoveSpread(AHSpreadBase* Spread);
 	
-	AHRoomBase();
+	UFUNCTION(BlueprintCallable,Category="Operation")
+	void RoomFocusOn();
+	UFUNCTION(BlueprintCallable,Category="Operation")
+	void RoomOutOfFocus();
+
+
+	
 };
