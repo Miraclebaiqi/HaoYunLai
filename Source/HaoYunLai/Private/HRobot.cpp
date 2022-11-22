@@ -3,32 +3,33 @@
 
 #include "HRobot.h"
 
+#include "HRoomBase.h"
+#include "Kismet/GameplayStatics.h"
+
+
 // Sets default values
 AHRobot::AHRobot()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	MaxDurability = 100.0f;
+	Durability = 100.0f;
+	BeginRoomID = 0;
 }
-
-// Called when the game starts or when spawned
 void AHRobot::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	TArray<AActor*> Rooms;
+	UGameplayStatics::GetAllActorsOfClass(this,AHRoomBase::StaticClass(),Rooms);
+
+	for (AActor* RoomActor : Rooms)
+	{
+		AHRoomBase* Room = Cast<AHRoomBase>(RoomActor);
+		if (Room && Room->GetRoomID() == BeginRoomID)
+		{
+			Room->RoomFocusOn();
+			UKismetSystemLibrary::PrintString(this,TEXT("成功聚焦起始房间"), true, false, FLinearColor::White, 3.0f);
+			return;
+		}
+	}
+	UKismetSystemLibrary::PrintString(this,TEXT("未能找到起始房间，请重新配置相关参数"), true, false, FLinearColor::Red, 30.0f);
 }
-
-// Called every frame
-void AHRobot::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-// Called to bind functionality to input
-void AHRobot::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-

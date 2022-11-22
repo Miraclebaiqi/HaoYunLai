@@ -7,29 +7,49 @@
 #include "HDoor.generated.h"
 
 class AHRoomBase;
+class USphereComponent;
+class UCapsuleComponent;
+class UArrowComponent;
+
 UCLASS()
 class HAOYUNLAI_API AHDoor : public AHInteractedItem
 {
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(VisibleAnywhere, Category="Component")
+	UCapsuleComponent* InDoorPoint;
+	UPROPERTY(VisibleAnywhere, Category="Component")
+	UCapsuleComponent* OutDoorPoint;
+	UPROPERTY(VisibleAnywhere, Category="Component")
+	UArrowComponent* ArrowCompIn;
+	UPROPERTY(VisibleAnywhere, Category="Component")
+	UArrowComponent* ArrowCompOut;
+
+	UPROPERTY(EditAnywhere,Category="Attribute")
+	int32 DoorID;
+	//匹配编码(编码为正整数)，拥有相同匹配码的两个门会互相连接；如果有两个以上的门拥有相同的匹配码，会随机弃用其他门。
+	UPROPERTY(EditAnywhere, Category="Attribute")
+	int32 MatchingCode;
 	UPROPERTY(EditAnywhere, Category="Attribute")
 	bool IsClose;
 	UPROPERTY(EditAnywhere, Category="Attribute")
 	bool IsBroken;
-	//匹配编码(编码为正整数)，拥有相同匹配码的两个门会互相连接；如果有两个以上的门拥有相同的匹配码，会随机弃用其他门。
-	UPROPERTY(EditAnywhere, Category="Attribute")
-	int32 MatchingCode;
+	UPROPERTY(EditDefaultsOnly, Category="Attribute")
+	float Durability;
+	UPROPERTY(EditDefaultsOnly, Category="Attribute")
+	float MaxDurability;
 	UPROPERTY(VisibleAnywhere, Category="Attribute")
 	AHDoor* ConnectedDoor;
 	UPROPERTY(VisibleAnywhere, Category="Attribute")
 	AHRoomBase* OwnerRoom;
 
-	//开关门动画(在蓝图中实现)
-	UFUNCTION(BlueprintImplementableEvent, Category="Animation")
-	void AnimationDoor(bool IsClosed);
 
-	virtual void BeginPlay() override;
+	UFUNCTION(BlueprintCallable, Category="Operation")
+	void ActiveNextRoom();
+	//开关门动画(在蓝图中实现)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="Animation")
+	void AnimationDoor(bool IsClosed);
 
 public:
 	UFUNCTION(BlueprintCallable, Category="Operation")
@@ -42,13 +62,23 @@ public:
 	bool AssimilateConnectedDoor();
 
 	UFUNCTION(BlueprintCallable, Category="Get")
-	bool GetDoorIsClose();
+	bool GetDoorIsClosed();
 	UFUNCTION(BlueprintCallable, Category="Get")
 	int32 GetMatchingCode();
 	UFUNCTION(BlueprintCallable, Category="Get")
 	AHDoor* GetConectedDoor();
 	UFUNCTION(BlueprintCallable, Category="Get")
 	AHRoomBase* GetOwnerRoom();
+	UFUNCTION(BlueprintCallable, Category="Get")
+	FVector GetInDoorLoaction();
+	UFUNCTION(BlueprintCallable, Category="Get")
+	FVector GetOutDoorLoaction();
+	UFUNCTION(BlueprintCallable, Category="Get")
+	FRotator GetInDoorRotatior();
+	UFUNCTION(BlueprintCallable, Category="Get")
+	FRotator GetOutDoorRotatior();
+	UFUNCTION(BlueprintCallable, Category="Get")
+	int32 GetDoorID() const;
 
 	UFUNCTION(BlueprintCallable, Category="Set")
 	void SetDoorIsBroken(bool BeBroken);
@@ -64,4 +94,6 @@ public:
 	virtual void Interact_Implementation(APawn* InstigatorActor) override;
 
 	AHDoor();
+
+	virtual void BeginPlay() override;
 };

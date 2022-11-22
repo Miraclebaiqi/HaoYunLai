@@ -19,7 +19,7 @@ AHPlayer::AHPlayer()
 
 	ActiveCamera = this;
 	RayDistance = 10000.0f;
-	PS = EPlayerState::PS_Normal;
+	PS = HEPlayerState::PS_Normal;
 }
 
 // 聚焦可交互物品的方法
@@ -117,7 +117,7 @@ void AHPlayer::PrimaryInteract()
 	}
 }
 
-void AHPlayer::SetPlayerState(EPlayerState PlayerCurrentState)
+void AHPlayer::SetPlayerState(HEPlayerState PlayerCurrentState)
 {
 	PS = PlayerCurrentState;
 }
@@ -150,20 +150,20 @@ void AHPlayer::ClickLeft()
 
 void AHPlayer::ClickRight()
 {
-	if (PS == EPlayerState::PS_FocusOnTableItem)
+	if (PS == HEPlayerState::PS_FocusOnTableItem)
 	{
 		if (ensure(Table))
 		{
 			FocusOn(Cast<AHInteractedItem>(Table));
-			PS = EPlayerState::PS_FocusOnTable;
+			PS = HEPlayerState::PS_FocusOnTable;
 		}
 	}
-	else if (PS == EPlayerState::PS_FocusInRoom)
+	else if (PS == HEPlayerState::PS_FocusInRoom)
 	{
 		if (ensure(Monitor))
 		{
 			FocusOn(Cast<AHInteractedItem>(Monitor),0.0f);
-			PS = EPlayerState::PS_FocusOnTableItem;
+			PS = HEPlayerState::PS_FocusOnTableItem;
 		}
 	}
 }

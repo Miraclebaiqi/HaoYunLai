@@ -4,15 +4,42 @@
 #include "HDoor.h"
 
 #include "HPlayer.h"
+#include "HRobot.h"
 #include "HRoomBase.h"
-
+#include "Components/ArrowComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 AHDoor::AHDoor()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	
+	InDoorPoint = CreateDefaultSubobject<UCapsuleComponent>("InDoorPoint");
+	InDoorPoint->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	InDoorPoint->SetCapsuleHalfHeight(88.0f);
+	InDoorPoint->SetCapsuleRadius(34.0f);
+	InDoorPoint->SetupAttachment(RootComponent);
+
+	OutDoorPoint = CreateDefaultSubobject<UCapsuleComponent>("OutDoorPoint");
+	OutDoorPoint->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	OutDoorPoint->SetCapsuleHalfHeight(88.0f);
+	OutDoorPoint->SetCapsuleRadius(34.0f);
+	OutDoorPoint->SetupAttachment(RootComponent);
+
+	ArrowCompIn = CreateDefaultSubobject<UArrowComponent>("ArrowCompIn");
+	ArrowCompIn->SetupAttachment(InDoorPoint);
+
+	ArrowCompOut = CreateDefaultSubobject<UArrowComponent>("ArrowCompOut");
+	ArrowCompOut->SetupAttachment(OutDoorPoint);
+
 	IsClose = false;
 	IsBroken = false;
 	MatchingCode = -1;
+	MaxDurability = 100.0f;
+	Durability = 100.0f;
 }
+
 
 bool AHDoor::SwitchDoor()
 {
@@ -37,11 +64,13 @@ void AHDoor::BrokeDoor()
 		AnimationDoor(false);
 	}
 	IsBroken = true;
+	AssimilateConnectedDoor();
 }
 
 void AHDoor::FixDoor()
 {
 	IsBroken = false;
+	Durability = MaxDurability;
 }
 
 //连接门的同化操作
@@ -64,46 +93,36 @@ bool AHDoor::AssimilateConnectedDoor()
 //门触发了交互
 void AHDoor::Interact_Implementation(APawn* InstigatorActor)
 {
-	if(IsActive)
+	if (IsActive)
 	{
-		if (IsClose)
+		AHRobot* ActorRobot = Cast<AHRobot>(UGameplayStatics::GetActorOfClass(this, AHRobot::StaticClass()));
+		if (ActorRobot)
 		{
-			UE_LOG(LogTemp, Log, TEXT("门是关闭状态的，无法通过"));
+			ActorRobot->MoveToTarget(this);
+			UKismetSystemLibrary::PrintString(this,TEXT("机器人走到门前"), true, false, FLinearColor::White, 3.0f);
 		}
 		else
 		{
-			if (ensure(ConnectedDoor))
-			{
-				AHRoomBase* NextRoom = ConnectedDoor->GetOwnerRoom();
-				if (ensure(NextRoom))
-				{
-					AHPlayer* PlayerPawn = Cast<AHPlayer>(InstigatorActor);
-					if (PlayerPawn)
-					{
-						PlayerPawn->SwitchCurrentCamera(Cast<AActor>(NextRoom));
-						OwnerRoom->RoomOutOfFocus();
-						NextRoom->RoomFocusOn();
-						UE_LOG(LogTemp, Log, TEXT("门是打开状态的，进入下一个房间"));
-					}
-				}
-				else
-				{
-					UE_LOG(LogTemp, Warning, TEXT("你的门没有连接任何房间"));
-				}
-			}
-			else
-			{
-				UE_LOG(LogTemp, Warning, TEXT("你的门并没有设置连接门"));
-			}
+			UKismetSystemLibrary::PrintString(this,TEXT("场景中没有可控制的机器人"), true, false, FLinearColor::Yellow, 10.0f);
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("你的门并没有激活"));
+		UKismetSystemLibrary::PrintString(this,TEXT("你的门并没有激活"), true, false, FLinearColor::Yellow, 10.0f);
 	}
 }
 
-bool AHDoor::GetDoorIsClose()
+//机器人进入新房间(聚焦新房间，失焦当前房间)
+void AHDoor::ActiveNextRoom()
+{
+	if (ConnectedDoor)
+	{
+		GetOwnerRoom()->RoomOutOfFocus();
+		ConnectedDoor->GetOwnerRoom()->RoomFocusOn();
+	}
+}
+
+bool AHDoor::GetDoorIsClosed()
 {
 	return IsClose;
 }
@@ -121,6 +140,31 @@ AHDoor* AHDoor::GetConectedDoor()
 AHRoomBase* AHDoor::GetOwnerRoom()
 {
 	return OwnerRoom;
+}
+
+FVector AHDoor::GetInDoorLoaction()
+{
+	return InDoorPoint->GetComponentLocation();
+}
+
+FVector AHDoor::GetOutDoorLoaction()
+{
+	return OutDoorPoint->GetComponentLocation();
+}
+
+FRotator AHDoor::GetInDoorRotatior()
+{
+	return InDoorPoint->GetComponentRotation();
+}
+
+FRotator AHDoor::GetOutDoorRotatior()
+{
+	return OutDoorPoint->GetComponentRotation();
+}
+
+int32 AHDoor::GetDoorID() const
+{
+	return DoorID;
 }
 
 void AHDoor::SetDoorIsBroken(bool BeBroken)
@@ -149,7 +193,25 @@ void AHDoor::SetOwnerRoom(AHRoomBase* Room)
 }
 
 
+void AHDoor::AnimationDoor_Implementation(bool IsClosed)
+{
+	if (IsClosed)
+	{
+		UKismetSystemLibrary::PrintString(this,TEXT("假装有关门动画"), true, false, FLinearColor::White, 3.0f);
+	}
+	else
+	{
+		UKismetSystemLibrary::PrintString(this,TEXT("假装有开门动画"), true, false, FLinearColor::White, 3.0f);
+	}
+}
+
+//注意一定要引用基类的Beginplay，不然此Actor不具备Tick功能。还会产生一些其他问题。
 void AHDoor::BeginPlay()
 {
+	Super::BeginPlay();
+
 	AnimationDoor(IsClose);
+	
 }
+
+

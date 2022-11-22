@@ -7,26 +7,27 @@
 #include "HRobot.generated.h"
 
 class UCameraComponent;
-
+class AHInteractedItem;
+class AHRoomBase;
 UCLASS()
 class HAOYUNLAI_API AHRobot : public ACharacter
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this character's properties
-	AHRobot();
-
 protected:
 	
-	// Called when the game starts or when spawned
+	UPROPERTY(EditDefaultsOnly,Category="Attribute")
+	float Durability;
+	UPROPERTY(EditDefaultsOnly,Category="Attribute")
+	float MaxDurability;
+	UPROPERTY(EditAnywhere,Category="Attribute")
+	int32 BeginRoomID;
+
 	virtual void BeginPlay() override;
+public:
+	AHRobot();
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	//机器人向着目标移动
+	UFUNCTION(BlueprintImplementableEvent, Category="Animation")
+	void MoveToTarget(AHInteractedItem* InteractedItem_Instigator);
 };

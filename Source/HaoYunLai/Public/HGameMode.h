@@ -6,21 +6,30 @@
 #include "GameFramework/GameModeBase.h"
 #include "HGameMode.generated.h"
 
-/**
- * 
- */
+static float Electricity;
+static float MAXElectricity;
+
 UCLASS()
 class HAOYUNLAI_API AHGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
+
 protected:
+
 
 	UFUNCTION()
 	void MatchDoor();
 
 
 public:
+	
+	UFUNCTION(BlueprintCallable,Category="Set")
+	static void  ApplyElectricityChanged(float Detal);
+	UFUNCTION(BlueprintCallable,Category="Set")
+	static void  ApplyMaxElectricityChanged(float Detal) ;
+
+	
 	virtual void StartPlay() override;
 };
 

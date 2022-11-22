@@ -8,6 +8,7 @@
 #include "HSpreadBase.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AHRoomBase::AHRoomBase()
@@ -19,6 +20,7 @@ AHRoomBase::AHRoomBase()
 	CaptureComp2D->SetupAttachment(CameraComp);
 	
 }
+
 
 
 void AHRoomBase::InitializeDoors()
@@ -54,11 +56,11 @@ void AHRoomBase::PostInitializeComponents()
 //给房间添加蔓延物 同种蔓延物不会重复添加
 void AHRoomBase::AddSpread(AHSpreadBase* Spread)
 {
-	for (int Index = 0; Index < Spreads.Num(); ++Index)
+	for (AHSpreadBase* TempSpread : Spreads)
 	{
-		if(Spreads[Index]->GetSpreadName() == Spread->GetSpreadName())
+		if(TempSpread->GetSpreadName() == Spread->GetSpreadName())
 		{
-			UE_LOG(LogTemp,Log,TEXT("蔓延物已经存在，不再重复添加"))
+			UKismetSystemLibrary::PrintString(this,TEXT("蔓延物已经存在，不再重复添加"), true, false, FLinearColor::White, 3.0f);
 			return;
 		}
 	}
@@ -73,7 +75,7 @@ void AHRoomBase::RemoveSpread(AHSpreadBase* Spread)
 	{
 		if(Spreads[Index]->GetSpreadName() == Spread->GetSpreadName())
 		{
-			UE_LOG(LogTemp,Log,TEXT("蔓延物从房间移除"))
+			UKismetSystemLibrary::PrintString(this,TEXT("蔓延物从房间移除"), true, false, FLinearColor::White, 3.0f);
 			Spreads.RemoveAt(Index);
 			return;
 		}
@@ -117,6 +119,24 @@ void AHRoomBase::RoomOutOfFocus()
 		}
 	}
 }
+
+void AHRoomBase::ApplyRoomLight(bool IsHidden)
+{
+	for (AActor* Light : Lights)
+	{
+		if (IsValid(Light))
+		{
+			Light->SetActorHiddenInGame(IsHidden);
+		}
+	}
+}
+
+int32 AHRoomBase::GetRoomID() const
+{
+	return RoomID;
+}
+
+
 
 
 

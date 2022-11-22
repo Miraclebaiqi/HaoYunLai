@@ -19,7 +19,7 @@ void AHItemOnTable::Interact_Implementation(APawn* InstigatorActor)
 				if (MyPlayer)
 				{
 					MyPlayer->FocusOn(this);
-					MyPlayer->SetPlayerState(EPlayerState::PS_FocusOnTableItem);
+					MyPlayer->SetPlayerState(HEPlayerState::PS_FocusOnTableItem);
 				}
 			}
 			else

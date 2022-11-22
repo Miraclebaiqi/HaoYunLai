@@ -12,7 +12,7 @@ class UCameraComponent;
 class AHInteractedItem;
 
 UENUM(BlueprintType)
-enum class EPlayerState:uint8
+enum class HEPlayerState:uint8
 {
 	PS_Normal,
 	PS_FocusOnTable,
@@ -30,7 +30,7 @@ public:
 	AHPlayer();
 
 	UFUNCTION(BlueprintCallable, Category="Operation")
-	void FocusOn(AHInteractedItem* Item,float Time = 2.0f);
+	void FocusOn(AHInteractedItem* Item, float Time = 2.0f);
 	UFUNCTION(BlueprintCallable, Category="Operation")
 	void FocusOut(AHInteractedItem* Item);
 	UFUNCTION(BlueprintCallable, Category="Operation")
@@ -39,7 +39,7 @@ public:
 	void PrimaryInteract();
 
 	UFUNCTION(BlueprintCallable, Category="Set")
-	void SetPlayerState(EPlayerState PlayerCurrentState);
+	void SetPlayerState(HEPlayerState PlayerCurrentState);
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category="Component")
@@ -59,7 +59,7 @@ protected:
 	float RayDistance;
 
 	UPROPERTY(BlueprintReadWrite, Category="Attribute")
-	EPlayerState PS;
+	HEPlayerState PS;
 
 
 	void ClickLeft();
