@@ -18,7 +18,9 @@ AHRoomBase::AHRoomBase()
 
 	CaptureComp2D = CreateDefaultSubobject<USceneCaptureComponent2D>("CaptureComp2D");
 	CaptureComp2D->SetupAttachment(CameraComp);
-	
+
+	IsFocused = false;
+	IsView = false;
 }
 
 
@@ -66,6 +68,9 @@ void AHRoomBase::AddSpread(AHSpreadBase* Spread)
 	}
 	Spread->SetOwnerRoom(this);
 	Spreads.Add(Spread);
+	
+	// 蔓延物发生变化时通知UI，UI根据自己的ID是否与房间匹配进行相应的变化
+	OnRoomSpreadChanged.Broadcast(this);
 }
 
 //给房间移除蔓延物
@@ -77,6 +82,9 @@ void AHRoomBase::RemoveSpread(AHSpreadBase* Spread)
 		{
 			UKismetSystemLibrary::PrintString(this,TEXT("蔓延物从房间移除"), true, false, FLinearColor::White, 3.0f);
 			Spreads.RemoveAt(Index);
+			
+			// 蔓延物发生变化时通知UI，UI根据自己的ID是否与房间匹配进行相应的变化
+			OnRoomSpreadChanged.Broadcast(this);
 			return;
 		}
 	}
@@ -99,6 +107,11 @@ void AHRoomBase::RoomFocusOn()
 			Item->IsActive = true;
 		}
 	}
+	
+	IsFocused = true;
+	
+	//当房间的聚焦情况发生变化时通知UI，UI根据自己的ID是否与房间匹配进行相应的变化
+	OnRoomFocusChanged.Broadcast(this);
 }
 
 //失焦该房间，房间内物品均不可交互
@@ -118,6 +131,11 @@ void AHRoomBase::RoomOutOfFocus()
 			Item->IsActive = false;
 		}
 	}
+	
+	IsFocused = false;
+	
+	//当房间的聚焦情况(激活情况)发生变化时通知UI，UI根据自己的ID是否与房间匹配进行相应的变化
+	OnRoomFocusChanged.Broadcast(this);
 }
 
 void AHRoomBase::ApplyRoomLight(bool IsHidden)
@@ -131,10 +149,34 @@ void AHRoomBase::ApplyRoomLight(bool IsHidden)
 	}
 }
 
+void AHRoomBase::SetIsView(bool IsViewCamera)
+{
+	IsView = IsViewCamera;
+
+	//当房间的摄像机视角发生变化时通知UI，UI根据自己的ID是否与房间匹配进行相应的变化
+	OnRoomViewChanged.Broadcast(this);
+}
+
 int32 AHRoomBase::GetRoomID() const
 {
 	return RoomID;
 }
+
+bool AHRoomBase::GetIsFocused() const
+{
+	return IsFocused;
+}
+
+bool AHRoomBase::GetIsView() const
+{
+	return IsView;
+}
+
+TArray<AHSpreadBase*> AHRoomBase::GetSpreads()
+{
+	return Spreads;
+}
+
 
 
 

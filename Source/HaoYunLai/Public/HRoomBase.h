@@ -12,8 +12,9 @@ class AHItemInRoom;
 class AHSpreadBase;
 class ACameraActor;
 class USceneCaptureComponent2D;
+class AHRoomBase;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRoomStateChanged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoomStateChanged, AHRoomBase*, InstigatorRoom);
 
 UCLASS()
 class HAOYUNLAI_API AHRoomBase : public AActor
@@ -21,7 +22,6 @@ class HAOYUNLAI_API AHRoomBase : public AActor
 	GENERATED_BODY()
 
 
-	
 protected:
 	UPROPERTY(VisibleAnywhere, Category="Component")
 	UCameraComponent* CameraComp;
@@ -31,6 +31,12 @@ protected:
 	//房间编号
 	UPROPERTY(EditAnywhere, Category="Attribute")
 	int32 RoomID;
+	//当前房间是否处于激活状态(机器人是否在当前房间)
+	UPROPERTY(VisibleAnywhere, Category="Attribute")
+	bool IsFocused;
+	//当前房间的摄像机是否是玩家使用的摄像机
+	UPROPERTY(VisibleAnywhere, Category="Attribute")
+	bool IsView;
 	//存放房间里面的光照信息
 	UPROPERTY(EditAnywhere, Category="Attribute")
 	TArray<AActor*> Lights;
@@ -54,8 +60,13 @@ protected:
 public:
 	AHRoomBase();
 
-	UPROPERTY(BlueprintAssignable)
-	FOnRoomStateChanged OnroomStateChanged;
+	//房间状态发生变化时的委托事件
+	UPROPERTY(BlueprintAssignable, Category="Delegate")
+	FOnRoomStateChanged OnRoomSpreadChanged;
+	UPROPERTY(BlueprintAssignable, Category="Delegate")
+	FOnRoomStateChanged OnRoomFocusChanged;
+	UPROPERTY(BlueprintAssignable, Category="Delegate")
+	FOnRoomStateChanged OnRoomViewChanged;
 	
 	UFUNCTION(BlueprintCallable, Category="Operation")
 	void AddSpread(AHSpreadBase* Spread);
@@ -70,6 +81,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Operation")
 	void ApplyRoomLight(bool IsHidden);
 
+	UFUNCTION(BlueprintCallable, Category="Set")
+	void SetIsView(bool IsViewCamera);
+
 	UFUNCTION(BlueprintCallable, Category="Get")
-	int32 GetRoomID()	const;
+	int32 GetRoomID() const;
+	UFUNCTION(BlueprintCallable, Category="Get")
+	bool GetIsFocused() const;
+	UFUNCTION(BlueprintCallable, Category="Get")
+	bool GetIsView() const;
+	UFUNCTION(BlueprintCallable, Category="Get")
+	TArray<AHSpreadBase*> GetSpreads();
 };

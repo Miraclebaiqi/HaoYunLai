@@ -45,6 +45,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category="Component")
 	UCameraComponent* CameraComp;
 
+	//玩家当前视角使用的摄像机
 	UPROPERTY(VisibleAnywhere, Category="Attribute")
 	AActor* ActiveCamera;
 	UPROPERTY(VisibleAnywhere, Category="Attribute")

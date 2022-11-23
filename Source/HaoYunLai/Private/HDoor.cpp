@@ -14,7 +14,7 @@
 AHDoor::AHDoor()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
+
 	InDoorPoint = CreateDefaultSubobject<UCapsuleComponent>("InDoorPoint");
 	InDoorPoint->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	InDoorPoint->SetCapsuleHalfHeight(88.0f);
@@ -46,7 +46,7 @@ bool AHDoor::SwitchDoor()
 	//如果门没坏，则切换门的开关状态
 	if (!IsBroken)
 	{
-		IsClose = !IsClose;
+		SetDoorIsClose(!IsClose);
 		AnimationDoor(IsClose);
 		AssimilateConnectedDoor();
 		return true;
@@ -60,16 +60,16 @@ void AHDoor::BrokeDoor()
 	//如果门是关闭状态，则会被强行打开
 	if (IsClose)
 	{
-		IsClose = false;
+		SetDoorIsClose(false);
 		AnimationDoor(false);
 	}
-	IsBroken = true;
+	SetDoorIsBroken(true);
 	AssimilateConnectedDoor();
 }
 
 void AHDoor::FixDoor()
 {
-	IsBroken = false;
+	SetDoorIsBroken(false);
 	Durability = MaxDurability;
 }
 
@@ -122,7 +122,13 @@ void AHDoor::ActiveNextRoom()
 	}
 }
 
-bool AHDoor::GetDoorIsClosed()
+
+bool AHDoor::GetDoorIsBroken() const
+{
+	return IsBroken;
+}
+
+bool AHDoor::GetDoorIsClosed() const
 {
 	return IsClose;
 }
@@ -167,14 +173,26 @@ int32 AHDoor::GetDoorID() const
 	return DoorID;
 }
 
+float AHDoor::GetDoorDurability() const
+{
+	return Durability;
+}
+
+float AHDoor::GetDoorMaxDurability() const
+{
+	return MaxDurability;
+}
+
 void AHDoor::SetDoorIsBroken(bool BeBroken)
 {
 	IsBroken = BeBroken;
+	OnDoorStateChange.Broadcast(this);
 }
 
 void AHDoor::SetDoorIsClose(bool BeClosed)
 {
 	IsClose = BeClosed;
+	OnDoorStateChange.Broadcast(this);
 }
 
 void AHDoor::SetMatchingCode(int32 Code)
@@ -190,6 +208,30 @@ void AHDoor::SetConectedDoor(AHDoor* Door)
 void AHDoor::SetOwnerRoom(AHRoomBase* Room)
 {
 	OwnerRoom = Room;
+}
+
+void AHDoor::ApplyDoorDurabilityChanged(float Delta)
+{
+	Durability += Delta;
+	Durability = FMath::Clamp(Durability, 0, MaxDurability);
+	if (Durability <= 0)
+	{
+		SetDoorIsBroken(true);
+	}
+	//门的耐久度发生了变化,通知...
+	OnDoorDutabilityChange.Broadcast(this);
+}
+
+void AHDoor::ApplyDoorMaxDurabilityChanged(float Delta)
+{
+	MaxDurability += Delta;
+	Durability = FMath::Clamp(Durability, 0, MaxDurability);
+	if (Durability <= 0)
+	{
+		SetDoorIsBroken(true);
+	}
+	//门的最大耐久度发生了变化,通知...
+	OnDoorDutabilityChange.Broadcast(this);
 }
 
 
@@ -211,7 +253,4 @@ void AHDoor::BeginPlay()
 	Super::BeginPlay();
 
 	AnimationDoor(IsClose);
-	
 }
-
-

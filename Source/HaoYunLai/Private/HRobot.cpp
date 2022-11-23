@@ -14,6 +14,7 @@ AHRobot::AHRobot()
 	Durability = 100.0f;
 	BeginRoomID = 0;
 }
+
 void AHRobot::BeginPlay()
 {
 	Super::BeginPlay();
@@ -32,4 +33,29 @@ void AHRobot::BeginPlay()
 		}
 	}
 	UKismetSystemLibrary::PrintString(this,TEXT("未能找到起始房间，请重新配置相关参数"), true, false, FLinearColor::Red, 30.0f);
+}
+
+
+void AHRobot::ApplyDurabilityChanged(float Delta)
+{
+	Durability += Delta;
+	Durability = FMath::Clamp(Durability,0,MaxDurability);
+	OnRobotDurabilityChanged.Broadcast(this);
+}
+
+
+void AHRobot::ApplyMaxDurabilityChanged(float Delta)
+{
+	MaxDurability += Delta;
+	OnRobotDurabilityChanged.Broadcast(this);
+}
+
+float AHRobot::GetDurability() const
+{
+	return Durability;
+}
+
+float AHRobot::GetMaxDurability() const
+{
+	return MaxDurability;
 }

@@ -4,47 +4,37 @@
 #include "HSpreadBase.h"
 
 #include "HRoomBase.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AHSpreadBase::AHSpreadBase()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	SpreadName = "Spread";
+	SpreadDamage = 0.0f;
+	ActiveTimeInterval = 5.0f;
 }
 
-
-//蔓延逻辑
 void AHSpreadBase::SpreadLogic()
 {
+	UKismetSystemLibrary::PrintString(this,TEXT("这里是蔓延物逻辑运行,请在子类中重写该函数"), true, false, FLinearColor::White, 3.0f);
 }
-
 
 void AHSpreadBase::SetOwnerRoom(AHRoomBase* Room)
 {
 	OwnerRoom = Room;
 }
 
-AHRoomBase* AHSpreadBase::GetOwnerRoom()
+AHRoomBase* AHSpreadBase::GetOwnerRoom() const
 {
 	return OwnerRoom;
 }
 
-FName AHSpreadBase::GetSpreadName()
+FName AHSpreadBase::GetSpreadName() const
 {
 	return SpreadName;
 }
 
-
-// Called when the game starts or when spawned
-void AHSpreadBase::BeginPlay()
+float AHSpreadBase::GetActiveTimeInterval() const
 {
-	Super::BeginPlay();
-}
-
-// Called every frame
-void AHSpreadBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+	return ActiveTimeInterval;
 }

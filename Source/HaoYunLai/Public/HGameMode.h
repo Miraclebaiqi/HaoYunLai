@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "HGameMode.generated.h"
 
+//游戏全局数据
 static float Electricity;
 static float MAXElectricity;
 

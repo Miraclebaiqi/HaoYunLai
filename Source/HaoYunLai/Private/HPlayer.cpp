@@ -6,6 +6,7 @@
 #include "HInteractedItem.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "HRoomBase.h"
 #include "Camera/CameraComponent.h"
 
 // Sets default values
@@ -23,7 +24,7 @@ AHPlayer::AHPlayer()
 }
 
 // 聚焦可交互物品的方法
-void AHPlayer::FocusOn(AHInteractedItem* Item,float Time)
+void AHPlayer::FocusOn(AHInteractedItem* Item, float Time)
 {
 	if (ensure(Item))
 	{
@@ -35,35 +36,43 @@ void AHPlayer::FocusOn(AHInteractedItem* Item,float Time)
 				FocusOut(FocusedItem);
 			}
 			FocusedItem = Item;
-			SwitchCurrentCamera(FocusedItem,Time);
+			SwitchCurrentCamera(FocusedItem, Time);
 			FocusedItem->IsFocused = true;
-			FocusedItem->EnableInput(UGameplayStatics::GetPlayerController(this,0));
+			FocusedItem->EnableInput(UGameplayStatics::GetPlayerController(this, 0));
 		}
 	}
 }
 
 void AHPlayer::FocusOut(AHInteractedItem* Item)
 {
-	if(ensure(Item))
+	if (ensure(Item))
 	{
 		Item->IsFocused = false;
-		Item->DisableInput(UGameplayStatics::GetPlayerController(this,0));
+		Item->DisableInput(UGameplayStatics::GetPlayerController(this, 0));
 	}
 }
 
 //切换摄像机 多用于房间
-void AHPlayer::SwitchCurrentCamera(AActor* CurrentCamera,float Time)
+void AHPlayer::SwitchCurrentCamera(AActor* CurrentCamera, float Time)
 {
 	if (ensure(CurrentCamera))
 	{
+		if (Cast<AHRoomBase>(CurrentCamera))
+		{
+			Cast<AHRoomBase>(CurrentCamera)->SetIsView(true);
+		}
+		if (Cast<AHRoomBase>(ActiveCamera))
+		{
+			Cast<AHRoomBase>(ActiveCamera)->SetIsView(false);
+		}
 		ActiveCamera = CurrentCamera;
-		ActiveCurrentCamera(ActiveCamera,Time);
+		ActiveCurrentCamera(ActiveCamera, Time);
 	}
 }
 
 
 //切换摄像机视角功能实现
-void AHPlayer::ActiveCurrentCamera(AActor* CurrentCamera,float BlendTime)
+void AHPlayer::ActiveCurrentCamera(AActor* CurrentCamera, float BlendTime)
 {
 	if (ensure(CurrentCamera))
 	{
@@ -140,7 +149,6 @@ void AHPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction("ClickLeft", IE_Pressed, this, &AHPlayer::ClickLeft);
 	PlayerInputComponent->BindAction("ClickRight", IE_Pressed, this, &AHPlayer::ClickRight);
-	
 }
 
 void AHPlayer::ClickLeft()
@@ -162,7 +170,7 @@ void AHPlayer::ClickRight()
 	{
 		if (ensure(Monitor))
 		{
-			FocusOn(Cast<AHInteractedItem>(Monitor),0.0f);
+			FocusOn(Cast<AHInteractedItem>(Monitor), 0.0f);
 			PS = HEPlayerState::PS_FocusOnTableItem;
 		}
 	}
