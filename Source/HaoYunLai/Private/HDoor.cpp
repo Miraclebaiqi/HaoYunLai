@@ -41,6 +41,12 @@ AHDoor::AHDoor()
 }
 
 
+void AHDoor::DoorInitialized()
+{
+	SetDoorIsClose(IsClose);
+	AnimationDoor(IsClose);
+}
+
 bool AHDoor::SwitchDoor()
 {
 	//如果门没坏，则切换门的开关状态
@@ -247,10 +253,3 @@ void AHDoor::AnimationDoor_Implementation(bool IsClosed)
 	}
 }
 
-//注意一定要引用基类的Beginplay，不然此Actor不具备Tick功能。还会产生一些其他问题。
-void AHDoor::BeginPlay()
-{
-	Super::BeginPlay();
-
-	AnimationDoor(IsClose);
-}

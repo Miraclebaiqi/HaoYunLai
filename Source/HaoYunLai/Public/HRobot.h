@@ -26,10 +26,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Attribute")
 	int32 BeginRoomID;
 
-	virtual void BeginPlay() override;
 public:
 	AHRobot();
-
+	
+	UFUNCTION(BlueprintCallable,Category="Initialized")
+	void RobotInitialized();
+	
 	//机器人向着目标移动
 	UFUNCTION(BlueprintImplementableEvent, Category="Animation")
 	void MoveToTarget(AHInteractedItem* InteractedItem_Instigator);

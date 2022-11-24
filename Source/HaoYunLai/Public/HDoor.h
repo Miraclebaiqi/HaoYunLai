@@ -54,6 +54,10 @@ protected:
 	void AnimationDoor(bool IsClosed);
 
 public:
+
+	UFUNCTION(BlueprintCallable,Category="Initialized")
+	void DoorInitialized();
+	
 	UFUNCTION(BlueprintCallable, Category="Operation")
 	bool SwitchDoor();
 	UFUNCTION(BlueprintCallable, Category="Operation")
@@ -112,6 +116,4 @@ public:
 	virtual void Interact_Implementation(APawn* InstigatorActor) override;
 
 	AHDoor();
-
-	virtual void BeginPlay() override;
 };

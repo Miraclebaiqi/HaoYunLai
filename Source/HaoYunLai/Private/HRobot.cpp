@@ -15,10 +15,8 @@ AHRobot::AHRobot()
 	BeginRoomID = 0;
 }
 
-void AHRobot::BeginPlay()
+void AHRobot::RobotInitialized()
 {
-	Super::BeginPlay();
-
 	TArray<AActor*> Rooms;
 	UGameplayStatics::GetAllActorsOfClass(this,AHRoomBase::StaticClass(),Rooms);
 
@@ -34,7 +32,6 @@ void AHRobot::BeginPlay()
 	}
 	UKismetSystemLibrary::PrintString(this,TEXT("未能找到起始房间，请重新配置相关参数"), true, false, FLinearColor::Red, 30.0f);
 }
-
 
 void AHRobot::ApplyDurabilityChanged(float Delta)
 {
