@@ -24,7 +24,7 @@ void AHEventManager::TriggerEvent(int32 EventID)
 	}
 }
 
-void AHEventManager::EventTriggerLogic_Implementation(const FString& LogicName)
+void AHEventManager::EventTriggerLogic_Implementation(FName LogicType, FName Param1 , FName Param2)
 {
 	UKismetSystemLibrary::PrintString(this,TEXT("需要在蓝图中重写事件触发逻辑"), true, false, FLinearColor::Yellow, 10.0f);
 }

@@ -27,7 +27,7 @@ public:
 	void TriggerEffect(FName EffectName);
 
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent,Category="Effect")
-	void EventTriggerLogic(const FString& LogicName);
+	void EventTriggerLogic(FName LogicType, FName Param1 , FName Param2);
 
 	
 

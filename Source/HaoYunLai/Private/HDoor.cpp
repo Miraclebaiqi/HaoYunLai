@@ -71,6 +71,7 @@ void AHDoor::BrokeDoor()
 		AnimationDoor(false);
 	}
 	SetDoorIsBroken(true);
+	Durability = 0.0f;
 	AssimilateConnectedDoor();
 }
 
@@ -89,12 +90,12 @@ bool AHDoor::AssimilateConnectedDoor()
 		ConnectedDoor->SetDoorIsBroken(IsBroken);
 		if (IsBroken)
 		{
-			if(ConnectedDoor->GetDoorIsClosed())
+			if (ConnectedDoor->GetDoorIsClosed())
 			{
 				ConnectedDoor->SetDoorIsClose(false);
 				ConnectedDoor->AnimationDoor(false);
 			}
-				ConnectedDoor->Durability = 0.0f;
+			ConnectedDoor->Durability = 0.0f;
 		}
 		else
 		{
@@ -274,4 +275,3 @@ void AHDoor::AnimationDoor_Implementation(bool IsClosed)
 		UKismetSystemLibrary::PrintString(this,TEXT("假装有开门动画"), true, false, FLinearColor::White, 3.0f);
 	}
 }
-

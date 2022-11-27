@@ -167,6 +167,13 @@ void AHRoomBase::SetIsBroken(bool IsCameraBroken)
 	OnRoomBrokenChanged.Broadcast(this);
 }
 
+void AHRoomBase::SetRoomIsInfected(bool IsRoomInfected)
+{
+	IsInfected = IsRoomInfected;
+	//当房间被菌毯感染的时候
+	OnRoomInfectedChanged.Broadcast(this);
+}
+
 int32 AHRoomBase::GetRoomID() const
 {
 	return RoomID;
@@ -185,6 +192,11 @@ bool AHRoomBase::GetIsView() const
 bool AHRoomBase::GetIsBroken() const
 {
 	return IsBroken;
+}
+
+bool AHRoomBase::GetIsInfected() const
+{
+	return IsInfected;
 }
 
 TArray<AHDoor*> AHRoomBase::GetDoors()

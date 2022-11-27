@@ -51,6 +51,8 @@ protected:
 	//存放房间里所有的蔓延物
 	UPROPERTY(VisibleAnywhere, Category="Attribute")
 	TArray<AHSpreadBase*> Spreads;
+	UPROPERTY(VisibleAnywhere, Category="Attribute")
+	bool IsInfected;
 
 	UFUNCTION(BlueprintCallable, Category="Initialize")
 	void InitializeDoors();
@@ -71,7 +73,9 @@ public:
 	FOnRoomStateChanged OnRoomViewChanged;
 	UPROPERTY(BlueprintAssignable, Category="Delegate")
 	FOnRoomStateChanged OnRoomBrokenChanged;
-	
+	UPROPERTY(BlueprintAssignable, Category="Delegate")
+	FOnRoomStateChanged OnRoomInfectedChanged;
+
 	UFUNCTION(BlueprintCallable, Category="Operation")
 	void AddSpread(AHSpreadBase* Spread);
 	UFUNCTION(BlueprintCallable, Category="Operation")
@@ -89,7 +93,9 @@ public:
 	void SetIsView(bool IsViewCamera);
 	UFUNCTION(BlueprintCallable, Category="Set")
 	void SetIsBroken(bool IsCameraBroken);
-	
+	UFUNCTION(BlueprintCallable, Category="Set")
+	void SetRoomIsInfected(bool IsRoomInfected);
+
 	UFUNCTION(BlueprintCallable, Category="Get")
 	int32 GetRoomID() const;
 	UFUNCTION(BlueprintCallable, Category="Get")
@@ -98,6 +104,8 @@ public:
 	bool GetIsView() const;
 	UFUNCTION(BlueprintCallable, Category="Get")
 	bool GetIsBroken() const;
+	UFUNCTION(BlueprintCallable, Category="Get")
+	bool GetIsInfected() const;
 	UFUNCTION(BlueprintCallable, Category="Get")
 	TArray<AHDoor*> GetDoors();
 	UFUNCTION(BlueprintCallable, Category="Get")
