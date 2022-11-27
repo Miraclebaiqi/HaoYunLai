@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "HEventManager.generated.h"
 
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEventTrigger,FName, Instigator);
 
 UCLASS()
@@ -24,5 +25,10 @@ public:
 
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent,Category="Effect")
 	void TriggerEffect(FName EffectName);
+
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent,Category="Effect")
+	void EventTriggerLogic(const FString& LogicName);
+
+	
 
 };

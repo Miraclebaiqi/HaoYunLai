@@ -6,16 +6,16 @@
 #include "Blueprint/UserWidget.h"
 #include "HUserWidget.generated.h"
 
-/**
- * 
- */
+class AHEventManager;
+
 UCLASS()
 class HAOYUNLAI_API UHUserWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
 public:
-
-	UFUNCTION(BlueprintCallable,BlueprintNativeEvent,Category="Operation")
-	void FindConnectedObject();
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Manager")
+	AHEventManager* EventManager;
+	
+	UFUNCTION(BlueprintCallable,Category="Operation")
+	void FindEventManager();
 };

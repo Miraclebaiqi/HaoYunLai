@@ -4,12 +4,13 @@
 #include "HEventManager.h"
 
 #include "Kismet/KismetSystemLibrary.h"
-
 // Sets default values
+
 AHEventManager::AHEventManager()
 {
 
 }
+
 
 void AHEventManager::TriggerEvent(int32 EventID)
 {
@@ -21,6 +22,11 @@ void AHEventManager::TriggerEvent(int32 EventID)
 	{
 		UKismetSystemLibrary::PrintString(this,TEXT("事件ID为0，不触发任何事件"), true, false, FLinearColor::White, 3.0f);
 	}
+}
+
+void AHEventManager::EventTriggerLogic_Implementation(const FString& LogicName)
+{
+	UKismetSystemLibrary::PrintString(this,TEXT("需要在蓝图中重写事件触发逻辑"), true, false, FLinearColor::Yellow, 10.0f);
 }
 
 
