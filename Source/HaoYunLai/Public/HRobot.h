@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "HRobot.generated.h"
 
+class UCharacterMovementComponent;
 class UCameraComponent;
 class AHInteractedItem;
 class AHRoomBase;
@@ -19,6 +20,11 @@ class HAOYUNLAI_API AHRobot : public ACharacter
 	GENERATED_BODY()
 
 protected:
+	
+	UCharacterMovementComponent* MovementComp;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Attribute")
+	float MoveSpeed;
 	UPROPERTY(EditDefaultsOnly, Category="Attribute")
 	float Durability;
 	UPROPERTY(EditDefaultsOnly, Category="Attribute")

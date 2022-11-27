@@ -16,22 +16,32 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Attribute")
 	FName SpreadName;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Attribute")
-	float SpreadDamage;
+	float SpreadDamageForDoor;
+	UPROPERTY(EditDefaultsOnly, Category="Attribute")
+	float SpreadDamageForRobot;
 	UPROPERTY(EditDefaultsOnly,Category="Attribute")
-	float ActiveTimeInterval;
+	float SpreadTime;
+	UPROPERTY(EditDefaultsOnly,Category="Attribute")
+	float DamageTime;
 	UPROPERTY(VisibleAnywhere, Category="Attribute")
 	AHRoomBase* OwnerRoom;
 
-	
+	FTimerHandle SpreadTimerHandle;
+	FTimerHandle DamageTimerHandle;
+
+	void DestroyedSpreadSelf();
 public:
 	
 	AHSpreadBase();
 
 	//蔓延逻辑
 	UFUNCTION(BlueprintCallable, Category="Operation")
-	virtual void SpreadLogic();
-
+	void SpreadLogic();
+	UFUNCTION(BlueprintCallable, Category="Operation")
+	void DamageLogic();
+	
 	UFUNCTION(BlueprintCallable, Category="Set")
 	void SetOwnerRoom(AHRoomBase* Room);
 	
@@ -39,8 +49,6 @@ public:
 	AHRoomBase* GetOwnerRoom() const;
 	UFUNCTION(BlueprintCallable, Category="Get")
 	FName GetSpreadName() const;
-	UFUNCTION(BlueprintCallable, Category="Get")
-	float GetActiveTimeInterval() const;
 
-	
+	virtual void BeginPlay() override;
 };

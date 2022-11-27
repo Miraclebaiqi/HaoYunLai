@@ -10,6 +10,7 @@
 class AActor;
 class UCameraComponent;
 class AHInteractedItem;
+class UHUserWidget;
 
 UENUM(BlueprintType)
 enum class HEPlayerState:uint8
@@ -17,7 +18,8 @@ enum class HEPlayerState:uint8
 	PS_Normal,
 	PS_FocusOnTable,
 	PS_FocusOnTableItem,
-	PS_FocusInRoom
+	PS_FocusInRoom,
+	PS_FocusInMaintenance
 };
 
 
@@ -50,11 +52,15 @@ protected:
 	AActor* ActiveCamera;
 	UPROPERTY(VisibleAnywhere, Category="Attribute")
 	AHInteractedItem* FocusedItem;
-
+	
 	UPROPERTY(EditAnywhere, Category="Attribute")
 	AActor* Table;
 	UPROPERTY(EditAnywhere, Category="Attribute")
 	AActor* Monitor;
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category = "Attribute")
+	UHUserWidget* UI_MoniPanel;
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category = "Attribute")
+	UHUserWidget* UI_Maintenance;
 
 	UPROPERTY(EditDefaultsOnly, Category="Attribute")
 	float RayDistance;

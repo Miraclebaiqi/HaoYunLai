@@ -21,6 +21,8 @@ AHRoomBase::AHRoomBase()
 
 	IsFocused = false;
 	IsView = false;
+	IsBroken = false;
+	
 }
 
 
@@ -68,7 +70,7 @@ void AHRoomBase::AddSpread(AHSpreadBase* Spread)
 	}
 	Spread->SetOwnerRoom(this);
 	Spreads.Add(Spread);
-	
+	UKismetSystemLibrary::PrintString(this,TEXT("蔓延物添加到房间"), true, false, FLinearColor::White, 3.0f);
 	// 蔓延物发生变化时通知UI，UI根据自己的ID是否与房间匹配进行相应的变化
 	OnRoomSpreadChanged.Broadcast(this);
 }
@@ -157,6 +159,14 @@ void AHRoomBase::SetIsView(bool IsViewCamera)
 	OnRoomViewChanged.Broadcast(this);
 }
 
+void AHRoomBase::SetIsBroken(bool IsCameraBroken)
+{
+	IsBroken = IsCameraBroken;
+
+	//当房间摄像机使用情况发生变化时通知UI,UI根据自己的ID是否与房间匹配进行相应的变化
+	OnRoomBrokenChanged.Broadcast(this);
+}
+
 int32 AHRoomBase::GetRoomID() const
 {
 	return RoomID;
@@ -170,6 +180,16 @@ bool AHRoomBase::GetIsFocused() const
 bool AHRoomBase::GetIsView() const
 {
 	return IsView;
+}
+
+bool AHRoomBase::GetIsBroken() const
+{
+	return IsBroken;
+}
+
+TArray<AHDoor*> AHRoomBase::GetDoors()
+{
+	return Doors;
 }
 
 TArray<AHSpreadBase*> AHRoomBase::GetSpreads()

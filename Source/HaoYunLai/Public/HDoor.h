@@ -42,6 +42,8 @@ protected:
 	float Durability;
 	UPROPERTY(EditDefaultsOnly, Category="Attribute")
 	float MaxDurability;
+	UPROPERTY(EditDefaultsOnly, Category="Attribute")
+	float OperatePowerCost;
 	UPROPERTY(VisibleAnywhere, Category="Attribute")
 	AHDoor* ConnectedDoor;
 	UPROPERTY(VisibleAnywhere, Category="Attribute")
@@ -77,6 +79,8 @@ public:
 	bool GetDoorIsBroken() const;
 	UFUNCTION(BlueprintCallable, Category="Get")
 	bool GetDoorIsClosed() const;
+	UFUNCTION(BlueprintCallable, Category="Get")
+	float GetPowerCost() const;
 	UFUNCTION(BlueprintCallable, Category="Get")
 	int32 GetMatchingCode();
 	UFUNCTION(BlueprintCallable, Category="Get")

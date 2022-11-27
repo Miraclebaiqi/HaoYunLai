@@ -38,6 +38,7 @@ AHDoor::AHDoor()
 	MatchingCode = -1;
 	MaxDurability = 100.0f;
 	Durability = 100.0f;
+	OperatePowerCost = 1.0f;
 }
 
 
@@ -77,6 +78,7 @@ void AHDoor::FixDoor()
 {
 	SetDoorIsBroken(false);
 	Durability = MaxDurability;
+	AssimilateConnectedDoor();
 }
 
 //连接门的同化操作
@@ -85,10 +87,20 @@ bool AHDoor::AssimilateConnectedDoor()
 	if (ConnectedDoor)
 	{
 		ConnectedDoor->SetDoorIsBroken(IsBroken);
-		if (!IsBroken)
+		if (IsBroken)
+		{
+			if(ConnectedDoor->GetDoorIsClosed())
+			{
+				ConnectedDoor->SetDoorIsClose(false);
+				ConnectedDoor->AnimationDoor(false);
+			}
+				ConnectedDoor->Durability = 0.0f;
+		}
+		else
 		{
 			ConnectedDoor->SetDoorIsClose(IsClose);
 			ConnectedDoor->AnimationDoor(IsClose);
+			ConnectedDoor->Durability = Durability;
 		}
 		return true;
 	}
@@ -137,6 +149,11 @@ bool AHDoor::GetDoorIsBroken() const
 bool AHDoor::GetDoorIsClosed() const
 {
 	return IsClose;
+}
+
+float AHDoor::GetPowerCost() const
+{
+	return OperatePowerCost;
 }
 
 int32 AHDoor::GetMatchingCode()
@@ -222,8 +239,9 @@ void AHDoor::ApplyDoorDurabilityChanged(float Delta)
 	Durability = FMath::Clamp(Durability, 0, MaxDurability);
 	if (Durability <= 0)
 	{
-		SetDoorIsBroken(true);
+		BrokeDoor();
 	}
+	AssimilateConnectedDoor();
 	//门的耐久度发生了变化,通知...
 	OnDoorDutabilityChange.Broadcast(this);
 }
@@ -234,7 +252,11 @@ void AHDoor::ApplyDoorMaxDurabilityChanged(float Delta)
 	Durability = FMath::Clamp(Durability, 0, MaxDurability);
 	if (Durability <= 0)
 	{
-		SetDoorIsBroken(true);
+		BrokeDoor();
+	}
+	if (ConnectedDoor)
+	{
+		ConnectedDoor->MaxDurability = MaxDurability;
 	}
 	//门的最大耐久度发生了变化,通知...
 	OnDoorDutabilityChange.Broadcast(this);

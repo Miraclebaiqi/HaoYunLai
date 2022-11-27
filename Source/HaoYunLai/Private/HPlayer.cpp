@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "HRoomBase.h"
+#include "HUserWidget.h"
 #include "Camera/CameraComponent.h"
 
 // Sets default values
@@ -100,10 +101,10 @@ void AHPlayer::PrimaryInteract()
 
 			//设定射线形状
 			FCollisionShape Shape;
-			Shape.SetSphere(20.0f);
+			Shape.SetSphere(10.0f);
 			FVector Start = WorldLocation;
 			FVector End = WorldLocation + WorldDirection * RayDistance;
-			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 5);
+			//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 5);
 			FHitResult OutHit;
 			if (GetWorld()->SweepSingleByObjectType(OutHit, Start, End, FQuat::Identity, ObjectQueryParams, Shape))
 			{
@@ -114,7 +115,7 @@ void AHPlayer::PrimaryInteract()
 					if (HitACtor->Implements<UHGameInterface>())
 					{
 						IHGameInterface::Execute_Interact(HitACtor, this);
-						DrawDebugSphere(GetWorld(), OutHit.Location, 5.0f, 8, FColor::Green, false, 5);
+						DrawDebugSphere(GetWorld(), OutHit.Location, 10.0f, 12, FColor::Blue, false, 5);
 						// if (HitACtor->GetComponentByClass(UCameraComponent::StaticClass()))
 						// {
 						// 	FocusOn(Cast<AHInteractedItem>(HitACtor));
@@ -153,7 +154,10 @@ void AHPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AHPlayer::ClickLeft()
 {
-	PrimaryInteract();
+	if (PS == HEPlayerState::PS_FocusInRoom || PS == HEPlayerState::PS_FocusOnTableItem || PS == HEPlayerState::PS_FocusOnTable || PS == HEPlayerState::PS_Normal)
+	{
+		PrimaryInteract();
+	}
 }
 
 void AHPlayer::ClickRight()
@@ -170,8 +174,15 @@ void AHPlayer::ClickRight()
 	{
 		if (ensure(Monitor))
 		{
+			Cast<AHInteractedItem>(Monitor)->IsFocused = false;
 			FocusOn(Cast<AHInteractedItem>(Monitor), 0.0f);
+			UI_MoniPanel->SetVisibility(ESlateVisibility::Collapsed);
 			PS = HEPlayerState::PS_FocusOnTableItem;
 		}
+	}
+	else if (PS == HEPlayerState::PS_FocusInMaintenance)
+	{
+		UI_Maintenance->SetVisibility(ESlateVisibility::Collapsed);
+		PS = HEPlayerState::PS_FocusInRoom;
 	}
 }

@@ -34,6 +34,8 @@ protected:
 	//当前房间是否处于激活状态(机器人是否在当前房间)
 	UPROPERTY(VisibleAnywhere, Category="Attribute")
 	bool IsFocused;
+	UPROPERTY(VisibleAnywhere, Category="Attribute")
+	bool IsBroken;
 	//当前房间的摄像机是否是玩家使用的摄像机
 	UPROPERTY(VisibleAnywhere, Category="Attribute")
 	bool IsView;
@@ -67,6 +69,8 @@ public:
 	FOnRoomStateChanged OnRoomFocusChanged;
 	UPROPERTY(BlueprintAssignable, Category="Delegate")
 	FOnRoomStateChanged OnRoomViewChanged;
+	UPROPERTY(BlueprintAssignable, Category="Delegate")
+	FOnRoomStateChanged OnRoomBrokenChanged;
 	
 	UFUNCTION(BlueprintCallable, Category="Operation")
 	void AddSpread(AHSpreadBase* Spread);
@@ -83,13 +87,19 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Set")
 	void SetIsView(bool IsViewCamera);
-
+	UFUNCTION(BlueprintCallable, Category="Set")
+	void SetIsBroken(bool IsCameraBroken);
+	
 	UFUNCTION(BlueprintCallable, Category="Get")
 	int32 GetRoomID() const;
 	UFUNCTION(BlueprintCallable, Category="Get")
 	bool GetIsFocused() const;
 	UFUNCTION(BlueprintCallable, Category="Get")
 	bool GetIsView() const;
+	UFUNCTION(BlueprintCallable, Category="Get")
+	bool GetIsBroken() const;
+	UFUNCTION(BlueprintCallable, Category="Get")
+	TArray<AHDoor*> GetDoors();
 	UFUNCTION(BlueprintCallable, Category="Get")
 	TArray<AHSpreadBase*> GetSpreads();
 };

@@ -39,6 +39,7 @@ void AHItemInRoom::Interact_Implementation(APawn* InstigatorActor)
 		AHRobot* ActorRobot = Cast<AHRobot>(UGameplayStatics::GetActorOfClass(this, AHRobot::StaticClass()));
 		if (ActorRobot)
 		{
+			//在蓝图中实现的MoveToTarget功能
 			ActorRobot->MoveToTarget(this);
 			UKismetSystemLibrary::PrintString(this,TEXT("机器人走到交互物前"), true, false, FLinearColor::White, 3.0f);
 		}

@@ -4,12 +4,15 @@
 #include "HRobot.h"
 
 #include "HRoomBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
 AHRobot::AHRobot()
 {
+	MovementComp = Cast<UCharacterMovementComponent>(GetComponentByClass(UCharacterMovementComponent::StaticClass()));
+	MoveSpeed = 600.0f;
 	MaxDurability = 100.0f;
 	Durability = 100.0f;
 	BeginRoomID = 0;
@@ -18,7 +21,12 @@ AHRobot::AHRobot()
 void AHRobot::RobotInitialized()
 {
 	TArray<AActor*> Rooms;
-	UGameplayStatics::GetAllActorsOfClass(this,AHRoomBase::StaticClass(),Rooms);
+	UGameplayStatics::GetAllActorsOfClass(this, AHRoomBase::StaticClass(), Rooms);
+
+	if (MovementComp)
+	{
+		MovementComp->MaxWalkSpeed = MoveSpeed;
+	}
 
 	for (AActor* RoomActor : Rooms)
 	{
@@ -36,8 +44,19 @@ void AHRobot::RobotInitialized()
 void AHRobot::ApplyDurabilityChanged(float Delta)
 {
 	Durability += Delta;
-	Durability = FMath::Clamp(Durability,0,MaxDurability);
+	Durability = FMath::Clamp(Durability, 0, MaxDurability);
 	OnRobotDurabilityChanged.Broadcast(this);
+	if (MovementComp)
+	{
+		if (Durability / MaxDurability < 0.6)
+		{
+			MovementComp->MaxWalkSpeed = MoveSpeed / 2;
+		}
+		else
+		{
+			MovementComp->MaxWalkSpeed = MoveSpeed;
+		}
+	}
 }
 
 
